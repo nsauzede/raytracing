@@ -3,6 +3,7 @@ TARGET=main.exe
 CXXFLAGS+=-Wall -Werror
 CXXFLAGS+=-g -O0
 
+QUAD=1
 ifdef QUAD
 CXXFLAGS+=-DQUAD
 endif
