@@ -121,5 +121,17 @@ Vector Vector::Rev_Rotate(Scalar cos1, Scalar sin1, Scalar cos2, Scalar sin2)
 
 ostream& operator<<( ostream& os, Vector& rvalue)
 {
-	return os << "(" << rvalue.x << ";" << rvalue.y << ";" << rvalue.z << ")";
+//	return os << "(" << rvalue.x << ";" << rvalue.y << ";" << rvalue.z << ")";
+	return os << rvalue.x << " " << rvalue.y << " " << rvalue.z 
+//		<< endl
+		;
 }
+
+istream& operator>>( istream& is, Vector& rvalue)
+{
+	is >> rvalue.x;
+	is >> rvalue.y;
+	is >> rvalue.z;
+	return is;
+}
+

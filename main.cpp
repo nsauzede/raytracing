@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <string.h>
+#include <iostream>
+#include <fstream>
 
 #include "render.hpp"
 
@@ -43,9 +44,7 @@ int main()
 	memset( objs, 0, MAX * sizeof(void *));
 	int nobjs = 0;
 
-#define R 0.5
 #define LIM 1.4
-#ifdef QUAD
 	Quadratic *quad2;
 	// elliptic cone cyan 1
 	objs[nobjs++] = quad2 = new Quadratic;
@@ -110,14 +109,16 @@ int main()
 	quad2->yterm = 0;						// yterm : e
 	quad2->lower = Vector( -25, -40, -25);
 	quad2->upper = Vector( 25, 60, 25);
-#else
+#if 1
+	// sphere
+#define R 30
 	Sphere sphere;
 	objs[nobjs++] = &sphere;
-	sphere.loc = Vector( 0, 0, 0);
+	sphere.loc = Vector( 230, 60, 90);
 	sphere.vect1 = Vector( R, 0, 0);	// vect1 : radius 0 0
 	sphere.n1 = sphere.vect1.x * sphere.vect1.x;	// precompute n1=radius^2
 #endif
-	
+
 	int i, j;
 	for (j = 0; j < h; j++)
 	{
@@ -165,6 +166,16 @@ int main()
 		}
 		printf( "\n");
 	}
+
+	std::ofstream myfile;
+	myfile.open ("out.ray");
+	for (i = 0; i < nobjs; i++)
+	{
+//		objs[i]->dump();
+		std::cout << *objs[i] << std::endl;
+		myfile << *objs[i] << std::endl;
+	}
+	myfile.close();
 
 	return 0;
 }

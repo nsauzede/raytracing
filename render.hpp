@@ -205,6 +205,7 @@ class Object
 	Pattern	*pattern,	// addr of pattern structure
 			*remove;	// address of struct to remove
 						// obj section
+	virtual ~Object(){}
 	Object operator=(Object &);
 //	virtual void FindNorm(Vector * normal, Vector * position);
 //	virtual void Position (Scalar * pos1, Scalar *pos2, Vector
@@ -212,6 +213,13 @@ class Object
 	virtual int CollisionTest(Line * line, Scalar *t);
 //	virtual void FindBbox(Vector * v1, Vector * v2);
 //	virtual void Scale_Instance(Vector *mult, int fflag);
+
+// custom
+	virtual void dump( std::ostream& os){}
+	friend std::ostream &operator<<(std::ostream&,Object&);
+	friend std::istream &operator>>(std::istream&,Object&);
+	virtual void load( std::istream& is)	{	}
+	static Object* load0( std::istream& is);
 };
 
 class Sphere: public Object
@@ -223,6 +231,9 @@ class Sphere: public Object
 	int CollisionTest(Line * line, Scalar *t);
 	void FindBbox(Vector * v1, Vector * v2);
 	void Scale_Instance(Vector *mult, int fflag);
+// custom
+	virtual void dump( std::ostream& os);
+	virtual void load( std::istream& is);
 };
 
 #if 0
@@ -265,6 +276,9 @@ class Quadratic: public Object
 	int CollisionTest(Line * line, Scalar *t);
 	void FindBbox(Vector * v1, Vector * v2);
 	void Scale_Instance(Vector *mult, int fflag);
+// custom
+	virtual void dump( std::ostream& os);
+	virtual void load( std::istream& is);
 };
 #if 0
 class BBox: public Object

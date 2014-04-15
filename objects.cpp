@@ -1,3 +1,5 @@
+#include <iostream>
+
 // objects.cpp p189
 #include "render.hpp"
 
@@ -137,4 +139,94 @@ int Quadratic :: CollisionTest(Line * line, Scalar *t)
 		if (t1 > SMALL)
 		*t = t1;
 	return(TRUE);
+}
+
+// custom
+void Quadratic::dump( std::ostream& os)
+{
+	os 
+		<< " " 
+		<< loc 
+		<< " " 
+		<< vect1 
+		<< " " 
+		<< vect2 
+		<< " " 
+		<< cterm 
+		<< " " 
+		<< yterm 
+		<< " " 
+		<< lower 
+		<< " " 
+		<< upper 
+		<< std::endl;
+}
+
+void Quadratic::load( std::istream& is)
+{
+	is
+		>> loc 
+		>> vect1 
+		>> vect2 
+		>> cterm 
+		>> yterm 
+		>> lower 
+		>> upper 
+		;
+}
+
+std::ostream& operator<<( std::ostream& os, Object& rvalue)
+{
+	os << " " << (int)rvalue.type;
+	rvalue.dump( os);
+	return os;
+}
+
+#if 0
+std::istream& operator>>( std::istream& is, Object& rvalue)
+{
+	int type;
+	is >> type;
+	std::cout << "read type=%d" << std::endl;
+//	rvalue.load( is);
+	return is;
+}
+#endif
+
+Object* Object::load0( std::istream& is)
+{
+	Object* result = 0;
+	int ty;
+	is >> ty;
+	switch (ty)
+	{
+		case SPHERE:
+			result = new Sphere;
+			break;
+		case QUADRATIC:
+			result = new Quadratic;
+			break;
+	}
+	if (result)
+		result->load( is);
+
+	return result;
+}
+
+void Sphere::dump( std::ostream& os)
+{
+	os 
+		<< " " 
+		<< loc 
+		<< " " 
+		<< vect1 
+		<< std::endl;
+}
+
+void Sphere::load( std::istream& is)
+{
+	is
+		>> loc 
+		>> vect1 
+		;
 }
