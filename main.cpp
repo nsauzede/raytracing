@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <iostream>
 #include <fstream>
 
@@ -43,11 +44,12 @@ int main()
 	Object *objs[MAX];
 	memset( objs, 0, MAX * sizeof(void *));
 	int nobjs = 0;
+	Object **last = 0;
 
 #define LIM 1.4
 	Quadratic *quad2;
 	// elliptic cone cyan 1
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 230, 60, -100);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 2500, -625, 2500);		// vect2 : a b c
@@ -56,7 +58,7 @@ int main()
 	quad2->lower = Vector( -25, -50, -25);
 	quad2->upper = Vector( 25, 50, 25);
 	// cylinder green 2
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 300, 0, -55);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 1, 0, 1);		// vect2 : a b c
@@ -65,7 +67,7 @@ int main()
 	quad2->lower = Vector( -18, 0, -18);
 	quad2->upper = Vector( 18, 60, 18);
 	// elliptic paraboloid purple 3
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 220, 60, 25);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 60, 0, 60);		// vect2 : a b c
@@ -74,7 +76,7 @@ int main()
 	quad2->lower = Vector( -20, -40, -20);
 	quad2->upper = Vector( 20, 60, 20);
 	// hyperbolic paraboloid blue 4
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 160, 30, -35);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 2, 0, -2);		// vect2 : a b c
@@ -83,7 +85,7 @@ int main()
 	quad2->lower = Vector( -15, -25, -15);
 	quad2->upper = Vector( 15, 40, 15);
 	// hyperboloid of one sheet orange 5
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 230, 60, 90);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 1, -1, 1);		// vect2 : a b c
@@ -92,7 +94,7 @@ int main()
 	quad2->lower = Vector( -25, -60, -25);
 	quad2->upper = Vector( 25, 60, 25);
 	// hyperboloid of two sheets red 6
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 500, 60, 30);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( -5, -7, 3);		// vect2 : a b c
@@ -101,7 +103,7 @@ int main()
 	quad2->lower = Vector( -22, -60, -22);
 	quad2->upper = Vector( 22, 60, 22);
 	// ellipsoid white 7
-	objs[nobjs++] = quad2 = new Quadratic;
+	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	quad2->loc = Vector( 130, 30, 35);
 	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
 	quad2->vect2 = Vector( 8, 4, 1);		// vect2 : a b c
@@ -113,10 +115,21 @@ int main()
 	// sphere
 #define R 30
 	Sphere sphere;
-	objs[nobjs++] = &sphere;
+	objs[nobjs] = &sphere;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
 	sphere.loc = Vector( 230, 60, 90);
 	sphere.vect1 = Vector( R, 0, 0);	// vect1 : radius 0 0
 	sphere.n1 = sphere.vect1.x * sphere.vect1.x;	// precompute n1=radius^2
+#endif
+
+	Scalar flength = 5 * 65 * 0 + 1;
+#if 1
+	Scene scene;
+	scene.loc = line.loc;
+	scene.lookat = lookat;
+	scene.width = w;
+	scene.height = h;
+	scene.objlist = objs[0];
+	scene.flength = flength;
 #endif
 
 	int i, j;
@@ -126,7 +139,6 @@ int main()
 		{
 			Scalar u, v; 			// compute a point s in camera screen plane based on {u,v}
 //			v = -vw/2 + vw * (Scalar)i / ((Scalar)w - 1);	// XXX it seems like this doesn't work with examples from book : they are meant to be drawn right to left ?
-			Scalar flength = 5 * 65 * 0 + 1;
 			v = -vw/2 + vw * (Scalar)(w - i - 1) / ((Scalar)w - 1) / flength;
 			u = -vh/2 + vh * (Scalar)(h - j - 1) / ((Scalar)h - 1) / flength;
 			Vector s; 				// p=p0+(p1-p0)u+(p2-p0)v
@@ -169,12 +181,16 @@ int main()
 
 	std::ofstream myfile;
 	myfile.open ("out.ray");
+#if 0
 	for (i = 0; i < nobjs; i++)
 	{
 //		objs[i]->dump();
 		std::cout << *objs[i] << std::endl;
 		myfile << *objs[i] << std::endl;
 	}
+#else
+	myfile << scene;
+#endif
 	myfile.close();
 
 	return 0;

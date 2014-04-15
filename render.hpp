@@ -222,6 +222,25 @@ class Object
 	static Object* load0( std::istream& is);
 };
 
+//custom
+class Scene
+{
+	public:
+	static const int SCENE_VERSION = 1;
+	int version;
+	Vector loc;
+	Vector lookat;
+	Vector up;
+	int width;
+	int height;
+	Scalar flength;
+	
+	Object *objlist;
+	Scene():version(SCENE_VERSION){}
+	friend std::ostream &operator<<(std::ostream&,Scene&);
+	friend std::istream &operator>>(std::istream&,Scene&);
+};
+
 class Sphere: public Object
 {
 	public:

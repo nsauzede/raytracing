@@ -182,6 +182,55 @@ std::ostream& operator<<( std::ostream& os, Object& rvalue)
 	return os;
 }
 
+std::ostream& operator<<( std::ostream& os, Scene& rvalue)
+{
+	os
+		<< rvalue.version
+		<< " "
+		<< rvalue.loc
+		<< " "
+		<< rvalue.lookat
+		<< " "
+		<< rvalue.width
+		<< " "
+		<< rvalue.height
+		<< " "
+		<< rvalue.flength
+		<< std::endl;
+	Object *obj = rvalue.objlist;
+	while (obj)
+	{
+		os << *obj << std::endl;
+		obj = obj->nextobj;
+	}
+	return os;
+}
+
+std::istream& operator>>( std::istream& is, Scene& rvalue)
+{
+	is >> rvalue.version;
+	if (rvalue.version > Scene::SCENE_VERSION)
+	{
+		std::cout << "scene version unsupported (mine is " << Scene::SCENE_VERSION << " scene is " << rvalue.version << ")" << std::endl;
+		exit( 1);
+	}
+	is
+		>> rvalue.loc
+		>> rvalue.lookat
+		>> rvalue.up
+		>> rvalue.width
+		>> rvalue.height
+		>> rvalue.flength
+	;
+	Object **obj = &rvalue.objlist;
+	while (!is.eof())
+	{
+		*obj = Object::load0( is);
+		obj = &(*obj)->nextobj;
+	}
+	return is;
+}
+
 #if 0
 std::istream& operator>>( std::istream& is, Object& rvalue)
 {
