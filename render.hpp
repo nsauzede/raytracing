@@ -238,6 +238,7 @@ class Scene
 	Object *objlist;
 //	Scene():version(SCENE_VERSION),{}
 	void dump( std::ostream&);
+	int nobjs();
 	friend std::ostream &operator<<(std::ostream&,Scene&);
 	friend std::istream &operator>>(std::istream&,Scene&);
 };

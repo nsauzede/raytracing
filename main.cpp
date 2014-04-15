@@ -7,16 +7,12 @@
 
 int main()
 {
-	Scalar t = 3.14;
-	int n = 0;
-
 	Line line;
 	Vector up;
 	Vector lookat;
 	int w = 0;
 	int h = 0;
 	Scalar flength;
-
 	Object *objs = 0;
 	int nobjs = 0;
 
@@ -25,6 +21,7 @@ int main()
     myfile.open( "scene.ray");
 	myfile >> scene;
     myfile.close();
+    scene.dump( std::cout);
 	
 	w = scene.width;
 	h = scene.height;
@@ -34,18 +31,7 @@ int main()
 	lookat = scene.lookat;
 	up = scene.up;
 	objs = scene.objlist;
-	Object *obj = objs;
-	while (obj)
-	{
-		obj = obj->nextobj;
-		nobjs++;
-	}
-
-	printf( "loc=%f:%f:%f\n", line.loc.x, line.loc.y, line.loc.z);
-	printf( "lookat=%f:%f:%f\n", lookat.x, lookat.y, lookat.z);
-	printf( "up=%f:%f:%f\n", up.x, up.y, up.z);
-	printf( "flength=%f\n", flength);
-	printf( "w=%d h=%d\n", w, h);
+	nobjs = scene.nobjs();
 
 	line.dir = lookat - line.loc;
 	line.dir = line.dir / sqrt(line.dir % line.dir);;
@@ -66,6 +52,8 @@ int main()
 	{
 		for (i = 0; i < w; i++)
 		{
+			Scalar t;
+			int n;
 			Scalar u, v; 			// compute a point s in camera screen plane based on {u,v}
 //			v = -vw/2 + vw * (Scalar)i / ((Scalar)w - 1);	// XXX it seems like this doesn't work with examples from book : they are meant to be drawn right to left ?
 			v = -vw/2 + vw * (Scalar)(w - i - 1) / ((Scalar)w - 1) / flength;

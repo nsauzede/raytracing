@@ -144,10 +144,14 @@ int Quadratic :: CollisionTest(Line * line, Scalar *t)
 // custom
 void Scene::dump( std::ostream& os)
 {
-	os 	<< " version=" << version
-		<< " width=" << width
-		<< " height=" << height
-		<< std::endl;
+	os 	<< " version=" << version << std::endl
+    	<< " loc=" << loc.x << ":" << loc.y << ":" << loc.z << std::endl
+    	<< " lookat=" << lookat.x << ":" << lookat.y << ":" << lookat.z << std::endl
+    	<< " up=" << up.x << ":" << up.y << ":" << up.z << std::endl
+		<< " width=" << width << std::endl
+		<< " height=" << height << std::endl
+		<< " flength=" << flength << std::endl
+	;
 	Object *obj = objlist;
 	int nobjs = 0;
 	while (obj)
@@ -215,6 +219,18 @@ std::istream& operator>>( std::istream& is, Scene& rvalue)
 //	std::cout << "found " << nobjs << " objects" << std::endl;
 //	std::cout << "w=" << rvalue.width << " h=" << rvalue.height << std::endl;
 	return is;
+}
+
+int Scene::nobjs()
+{
+	int nobjs = 0;
+    Object *obj = objlist;
+    while (obj)
+    {
+        obj = obj->nextobj;
+        nobjs++;
+    }
+    return nobjs;
 }
 
 void Quadratic::dump( std::ostream& os)
