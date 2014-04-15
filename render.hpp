@@ -236,7 +236,8 @@ class Scene
 	Scalar flength;
 	
 	Object *objlist;
-	Scene():version(SCENE_VERSION){}
+//	Scene():version(SCENE_VERSION),{}
+	void dump( std::ostream&);
 	friend std::ostream &operator<<(std::ostream&,Scene&);
 	friend std::istream &operator>>(std::istream&,Scene&);
 };

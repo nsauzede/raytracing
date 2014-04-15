@@ -11,25 +11,46 @@ int main()
 	int n = 0;
 
 	Line line;
-#if 1
-	Vector up( 0, 1, 0);
-	line.loc = Vector( -20, 70, -80);
-	Vector lookat = Vector( 200, 50, -15);
-//	line.loc = Vector( 50, 70, 115);
-//	Vector lookat = Vector( 200, -50, 15);
+	Vector up;
+	Vector lookat;
+	int w = 0;
+	int h = 0;
+	Scalar flength;
+
+	Object *objs = 0;
+	int nobjs = 0;
+
+	Scene scene;
+    std::ifstream myfile;
+    myfile.open( "scene.ray");
+	myfile >> scene;
+    myfile.close();
+	
+	w = scene.width;
+	h = scene.height;
+	objs = scene.objlist;
+	flength = scene.flength;
+	line.loc = scene.loc;
+	lookat = scene.lookat;
+	up = scene.up;
+	objs = scene.objlist;
+	Object *obj = objs;
+	while (obj)
+	{
+		obj = obj->nextobj;
+		nobjs++;
+	}
+
+	printf( "loc=%f:%f:%f\n", line.loc.x, line.loc.y, line.loc.z);
+	printf( "lookat=%f:%f:%f\n", lookat.x, lookat.y, lookat.z);
+	printf( "up=%f:%f:%f\n", up.x, up.y, up.z);
+	printf( "flength=%f\n", flength);
+	printf( "w=%d h=%d\n", w, h);
 
 	line.dir = lookat - line.loc;
-//	line.dir = lookat;
 	line.dir = line.dir / sqrt(line.dir % line.dir);;
 
-#else
-	Vector up( 0, 1, 0);
-	line.loc = Vector( 1, 1, 1);
-	line.dir = Vector( -1, -1, -1);
-#endif
-	int w = 4*32;
-	int h = 2*20;
-	Scalar zoom = 1.0;
+	Scalar zoom = flength;
 	Scalar vw = 1.0 / zoom;
 	Scalar vh = 1.0 * h / w / zoom;
 
@@ -39,98 +60,6 @@ int main()
 	s0 = line.loc + line.dir;
 	s1 = s0 + up;
 	s2 = s0 + right;
-
-#define MAX 10
-	Object *objs[MAX];
-	memset( objs, 0, MAX * sizeof(void *));
-	int nobjs = 0;
-	Object **last = 0;
-
-#define LIM 1.4
-	Quadratic *quad2;
-	// elliptic cone cyan 1
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 230, 60, -100);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 2500, -625, 2500);		// vect2 : a b c
-	quad2->cterm = 0;					// cterm : d
-	quad2->yterm = 0;						// yterm : e
-	quad2->lower = Vector( -25, -50, -25);
-	quad2->upper = Vector( 25, 50, 25);
-	// cylinder green 2
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 300, 0, -55);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 1, 0, 1);		// vect2 : a b c
-	quad2->cterm = 300;					// cterm : d
-	quad2->yterm = 0;						// yterm : e
-	quad2->lower = Vector( -18, 0, -18);
-	quad2->upper = Vector( 18, 60, 18);
-	// elliptic paraboloid purple 3
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 220, 60, 25);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 60, 0, 60);		// vect2 : a b c
-	quad2->cterm = 0;					// cterm : d
-	quad2->yterm = -60;						// yterm : e
-	quad2->lower = Vector( -20, -40, -20);
-	quad2->upper = Vector( 20, 60, 20);
-	// hyperbolic paraboloid blue 4
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 160, 30, -35);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 2, 0, -2);		// vect2 : a b c
-	quad2->cterm = 0;					// cterm : d
-	quad2->yterm = -100;						// yterm : e
-	quad2->lower = Vector( -15, -25, -15);
-	quad2->upper = Vector( 15, 40, 15);
-	// hyperboloid of one sheet orange 5
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 230, 60, 90);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 1, -1, 1);		// vect2 : a b c
-	quad2->cterm = 300;					// cterm : d
-	quad2->yterm = 0;						// yterm : e
-	quad2->lower = Vector( -25, -60, -25);
-	quad2->upper = Vector( 25, 60, 25);
-	// hyperboloid of two sheets red 6
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 500, 60, 30);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( -5, -7, 3);		// vect2 : a b c
-	quad2->cterm = 700;					// cterm : d
-	quad2->yterm = 0;						// yterm : e
-	quad2->lower = Vector( -22, -60, -22);
-	quad2->upper = Vector( 22, 60, 22);
-	// ellipsoid white 7
-	objs[nobjs] = quad2 = new Quadratic;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	quad2->loc = Vector( 130, 30, 35);
-	quad2->vect1 = Vector( 0, 1, 0);		// vect1 : dir
-	quad2->vect2 = Vector( 8, 4, 1);		// vect2 : a b c
-	quad2->cterm = 500;					// cterm : d
-	quad2->yterm = 0;						// yterm : e
-	quad2->lower = Vector( -25, -40, -25);
-	quad2->upper = Vector( 25, 60, 25);
-#if 1
-	// sphere
-#define R 30
-	Sphere sphere;
-	objs[nobjs] = &sphere;if (last) *last = objs[nobjs];last = &objs[nobjs++]->nextobj;
-	sphere.loc = Vector( 230, 60, 90);
-	sphere.vect1 = Vector( R, 0, 0);	// vect1 : radius 0 0
-	sphere.n1 = sphere.vect1.x * sphere.vect1.x;	// precompute n1=radius^2
-#endif
-
-	Scalar flength = 5 * 65 * 0 + 1;
-#if 1
-	Scene scene;
-	scene.loc = line.loc;
-	scene.lookat = lookat;
-	scene.width = w;
-	scene.height = h;
-	scene.objlist = objs[0];
-	scene.flength = flength;
-#endif
 
 	int i, j;
 	for (j = 0; j < h; j++)
@@ -149,10 +78,11 @@ int main()
 			t = 100000;
 			n = 0;
 			int nn;
+			Object *obj = objs;
 			for (nn = 0; nn < nobjs; nn++)
 			{
 				Scalar _t;
-				int ret = objs[nn]->CollisionTest( &l, &_t);
+				int ret = obj->CollisionTest( &l, &_t);
 				if (ret)
 				{
 					if (_t < t)
@@ -161,15 +91,14 @@ int main()
 						t = _t;
 					}
 				}
+				obj = obj->nextobj;
 			}
 			double val = 0;
 			if (n)
 				val = t;
 			val = val;
-			//printf( "%c", n ? 'G' : '.');
 			if (n)
 			{
-				//printf( "%1.0f", val * 10);
 				int v = val * 10;
 				printf( "%d", v % 10);
 			}
@@ -178,20 +107,6 @@ int main()
 		}
 		printf( "\n");
 	}
-
-	std::ofstream myfile;
-	myfile.open ("out.ray");
-#if 0
-	for (i = 0; i < nobjs; i++)
-	{
-//		objs[i]->dump();
-		std::cout << *objs[i] << std::endl;
-		myfile << *objs[i] << std::endl;
-	}
-#else
-	myfile << scene;
-#endif
-	myfile.close();
 
 	return 0;
 }

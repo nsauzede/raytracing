@@ -142,6 +142,81 @@ int Quadratic :: CollisionTest(Line * line, Scalar *t)
 }
 
 // custom
+void Scene::dump( std::ostream& os)
+{
+	os 	<< " version=" << version
+		<< " width=" << width
+		<< " height=" << height
+		<< std::endl;
+	Object *obj = objlist;
+	int nobjs = 0;
+	while (obj)
+	{
+//		os << " type=" << (int)obj->type << std::endl;
+		obj = obj->nextobj;
+		nobjs++;
+	}
+	os	<< "found " << nobjs << " objs"
+		<< std::endl;
+}
+
+std::ostream& operator<<( std::ostream& os, Scene& rvalue)
+{
+	os	<< rvalue.version
+		<< " "
+		<< rvalue.loc
+		<< " "
+		<< rvalue.lookat
+		<< " "
+		<< rvalue.up
+		<< " "
+		<< rvalue.width
+		<< " "
+		<< rvalue.height
+		<< " "
+		<< rvalue.flength
+		<< std::endl;
+	Object *obj = rvalue.objlist;
+	while (obj)
+	{
+		os << *obj << std::endl;
+		obj = obj->nextobj;
+	}
+	
+	return os;
+}
+
+std::istream& operator>>( std::istream& is, Scene& rvalue)
+{
+	is >> rvalue.version;
+	if (rvalue.version > Scene::SCENE_VERSION)
+	{
+		std::cout << "scene version unsupported (mine is " << Scene::SCENE_VERSION << " scene is " << rvalue.version << ")" << std::endl;
+		exit( 1);
+	}
+	is
+		>> rvalue.loc
+		>> rvalue.lookat
+		>> rvalue.up
+		>> rvalue.width
+		>> rvalue.height
+		>> rvalue.flength
+	;
+	Object **pobj = &rvalue.objlist;
+	int nobjs = 0;
+	while (!is.eof())
+	{
+		*pobj = Object::load0( is);
+		if (!*pobj)
+			break;
+		pobj = &((*pobj)->nextobj);
+		nobjs++;
+	}
+//	std::cout << "found " << nobjs << " objects" << std::endl;
+//	std::cout << "w=" << rvalue.width << " h=" << rvalue.height << std::endl;
+	return is;
+}
+
 void Quadratic::dump( std::ostream& os)
 {
 	os 
@@ -182,55 +257,6 @@ std::ostream& operator<<( std::ostream& os, Object& rvalue)
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, Scene& rvalue)
-{
-	os
-		<< rvalue.version
-		<< " "
-		<< rvalue.loc
-		<< " "
-		<< rvalue.lookat
-		<< " "
-		<< rvalue.width
-		<< " "
-		<< rvalue.height
-		<< " "
-		<< rvalue.flength
-		<< std::endl;
-	Object *obj = rvalue.objlist;
-	while (obj)
-	{
-		os << *obj << std::endl;
-		obj = obj->nextobj;
-	}
-	return os;
-}
-
-std::istream& operator>>( std::istream& is, Scene& rvalue)
-{
-	is >> rvalue.version;
-	if (rvalue.version > Scene::SCENE_VERSION)
-	{
-		std::cout << "scene version unsupported (mine is " << Scene::SCENE_VERSION << " scene is " << rvalue.version << ")" << std::endl;
-		exit( 1);
-	}
-	is
-		>> rvalue.loc
-		>> rvalue.lookat
-		>> rvalue.up
-		>> rvalue.width
-		>> rvalue.height
-		>> rvalue.flength
-	;
-	Object **obj = &rvalue.objlist;
-	while (!is.eof())
-	{
-		*obj = Object::load0( is);
-		obj = &(*obj)->nextobj;
-	}
-	return is;
-}
-
 #if 0
 std::istream& operator>>( std::istream& is, Object& rvalue)
 {
@@ -247,6 +273,8 @@ Object* Object::load0( std::istream& is)
 	Object* result = 0;
 	int ty;
 	is >> ty;
+	if (!is.eof())
+	{
 	switch (ty)
 	{
 		case SPHERE:
@@ -258,6 +286,7 @@ Object* Object::load0( std::istream& is)
 	}
 	if (result)
 		result->load( is);
+	}
 
 	return result;
 }
