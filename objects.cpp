@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 // objects.cpp p189
 #include "render.hpp"
@@ -142,6 +143,17 @@ int Quadratic :: CollisionTest(Line * line, Scalar *t)
 }
 
 // custom
+Scene::~Scene()
+{
+	Object *obj = objlist;
+//	asm volatile("int $3");
+	while (obj)
+	{
+		Object *next = obj->nextobj;
+		delete obj;
+		obj = next;
+	}
+}
 void Scene::dump( std::ostream& os)
 {
 	os 	<< " version=" << version << std::endl
@@ -160,26 +172,21 @@ void Scene::dump( std::ostream& os)
 		obj = obj->nextobj;
 		nobjs++;
 	}
-	os	<< "found " << nobjs << " objs"
-		<< std::endl;
+	os	<< "found " << nobjs << " objs" << std::endl;
+}
+
+void Scene::load( const char *filename)
+{
+	std::ifstream myfile;
+    myfile.open( "scene.ray");
+    myfile >> *this;
+    myfile.close();
 }
 
 std::ostream& operator<<( std::ostream& os, Scene& rvalue)
 {
-	os	<< rvalue.version
-		<< " "
-		<< rvalue.loc
-		<< " "
-		<< rvalue.lookat
-		<< " "
-		<< rvalue.up
-		<< " "
-		<< rvalue.width
-		<< " "
-		<< rvalue.height
-		<< " "
-		<< rvalue.flength
-		<< std::endl;
+	os	<< rvalue.version << " " << rvalue.loc << " " << rvalue.lookat << " " << rvalue.up << " " << rvalue.width << " " << rvalue.height
+		<< " " << rvalue.flength << std::endl;
 	Object *obj = rvalue.objlist;
 	while (obj)
 	{
@@ -198,14 +205,7 @@ std::istream& operator>>( std::istream& is, Scene& rvalue)
 		std::cout << "scene version unsupported (mine is " << Scene::SCENE_VERSION << " scene is " << rvalue.version << ")" << std::endl;
 		exit( 1);
 	}
-	is
-		>> rvalue.loc
-		>> rvalue.lookat
-		>> rvalue.up
-		>> rvalue.width
-		>> rvalue.height
-		>> rvalue.flength
-	;
+	is >> rvalue.loc >> rvalue.lookat >> rvalue.up >> rvalue.width >> rvalue.height >> rvalue.flength;
 	Object **pobj = &rvalue.objlist;
 	int nobjs = 0;
 	while (!is.eof())
@@ -216,8 +216,6 @@ std::istream& operator>>( std::istream& is, Scene& rvalue)
 		pobj = &((*pobj)->nextobj);
 		nobjs++;
 	}
-//	std::cout << "found " << nobjs << " objects" << std::endl;
-//	std::cout << "w=" << rvalue.width << " h=" << rvalue.height << std::endl;
 	return is;
 }
 
@@ -235,35 +233,12 @@ int Scene::nobjs()
 
 void Quadratic::dump( std::ostream& os)
 {
-	os 
-		<< " " 
-		<< loc 
-		<< " " 
-		<< vect1 
-		<< " " 
-		<< vect2 
-		<< " " 
-		<< cterm 
-		<< " " 
-		<< yterm 
-		<< " " 
-		<< lower 
-		<< " " 
-		<< upper 
-		<< std::endl;
+	os 	<< " " << loc << " " << vect1 << " " << vect2 << " " << cterm << " " << yterm << " " << lower << " " << upper << std::endl;
 }
 
 void Quadratic::load( std::istream& is)
 {
-	is
-		>> loc 
-		>> vect1 
-		>> vect2 
-		>> cterm 
-		>> yterm 
-		>> lower 
-		>> upper 
-		;
+	is >> loc >> vect1 >> vect2 >> cterm >> yterm >> lower >> upper;
 }
 
 std::ostream& operator<<( std::ostream& os, Object& rvalue)
@@ -272,17 +247,6 @@ std::ostream& operator<<( std::ostream& os, Object& rvalue)
 	rvalue.dump( os);
 	return os;
 }
-
-#if 0
-std::istream& operator>>( std::istream& is, Object& rvalue)
-{
-	int type;
-	is >> type;
-	std::cout << "read type=%d" << std::endl;
-//	rvalue.load( is);
-	return is;
-}
-#endif
 
 Object* Object::load0( std::istream& is)
 {
@@ -293,12 +257,8 @@ Object* Object::load0( std::istream& is)
 	{
 	switch (ty)
 	{
-		case SPHERE:
-			result = new Sphere;
-			break;
-		case QUADRATIC:
-			result = new Quadratic;
-			break;
+		case SPHERE: result = new Sphere; break;
+		case QUADRATIC: result = new Quadratic; break;
 	}
 	if (result)
 		result->load( is);
@@ -309,18 +269,10 @@ Object* Object::load0( std::istream& is)
 
 void Sphere::dump( std::ostream& os)
 {
-	os 
-		<< " " 
-		<< loc 
-		<< " " 
-		<< vect1 
-		<< std::endl;
+	os << " " << loc << " " << vect1 << std::endl;
 }
 
 void Sphere::load( std::istream& is)
 {
-	is
-		>> loc 
-		>> vect1 
-		;
+	is	>> loc 	>> vect1;
 }

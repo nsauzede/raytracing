@@ -233,10 +233,11 @@ class Scene
 	Vector up;
 	int width;
 	int height;
-	Scalar flength;
-	
+	Scalar flength;	
 	Object *objlist;
-//	Scene():version(SCENE_VERSION),{}
+	
+	~Scene();
+	void load( const char *filename);
 	void dump( std::ostream&);
 	int nobjs();
 	friend std::ostream &operator<<(std::ostream&,Scene&);

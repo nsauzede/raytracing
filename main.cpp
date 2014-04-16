@@ -1,37 +1,21 @@
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
-#include <fstream>
 
 #include "render.hpp"
 
 int main()
 {
 	Line line;
-	Vector up;
-	Vector lookat;
-	int w = 0;
-	int h = 0;
+	Vector up, lookat;
 	Scalar flength;
+	int w, h, nobjs;
 	Object *objs = 0;
-	int nobjs = 0;
 
 	Scene scene;
-    std::ifstream myfile;
-    myfile.open( "scene.ray");
-	myfile >> scene;
-    myfile.close();
+	scene.load( "scene.ray");
     scene.dump( std::cout);
-	
-	w = scene.width;
-	h = scene.height;
-	objs = scene.objlist;
-	flength = scene.flength;
-	line.loc = scene.loc;
-	lookat = scene.lookat;
-	up = scene.up;
-	objs = scene.objlist;
-	nobjs = scene.nobjs();
+// convert scene to local vars	
+	w = scene.width; h = scene.height; objs = scene.objlist; flength = scene.flength; line.loc = scene.loc; lookat = scene.lookat; up = scene.up; objs = scene.objlist; nobjs = scene.nobjs();
 
 	line.dir = lookat - line.loc;
 	line.dir = line.dir / sqrt(line.dir % line.dir);;
@@ -95,6 +79,5 @@ int main()
 		}
 		printf( "\n");
 	}
-
 	return 0;
 }
