@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <sstream>
 
 // objects.cpp p189
 #include "render.hpp"
@@ -168,7 +170,7 @@ void Scene::dump( std::ostream& os)
 	int nobjs = 0;
 	while (obj)
 	{
-//		os << " type=" << (int)obj->type << std::endl;
+		os << " obj=" << *obj << std::endl;
 		obj = obj->nextobj;
 		nobjs++;
 	}
@@ -212,7 +214,7 @@ std::istream& operator>>( std::istream& is, Scene& rvalue)
 	{
 		*pobj = Object::load0( is);
 		if (!*pobj)
-			break;
+			continue;
 		pobj = &((*pobj)->nextobj);
 		nobjs++;
 	}
@@ -233,7 +235,7 @@ int Scene::nobjs()
 
 void Quadratic::dump( std::ostream& os)
 {
-	os 	<< " " << loc << " " << vect1 << " " << vect2 << " " << cterm << " " << yterm << " " << lower << " " << upper << std::endl;
+	os 	<< " " << loc << " " << vect1 << " " << vect2 << " " << cterm << " " << yterm << " " << lower << " " << upper;
 }
 
 void Quadratic::load( std::istream& is)
@@ -251,17 +253,21 @@ std::ostream& operator<<( std::ostream& os, Object& rvalue)
 Object* Object::load0( std::istream& is)
 {
 	Object* result = 0;
-	int ty;
-	is >> ty;
+	std::string str;
+	std::getline( is, str);
 	if (!is.eof())
 	{
-	switch (ty)
-	{
-		case SPHERE: result = new Sphere; break;
-		case QUADRATIC: result = new Quadratic; break;
-	}
-	if (result)
-		result->load( is);
+		std::istringstream iss;
+		iss.str( str);
+		int ty;
+		iss >> ty;
+		switch (ty)
+		{
+			case SPHERE: result = new Sphere; break;
+			case QUADRATIC: result = new Quadratic; break;
+		}
+		if (result)
+			result->load( iss);
 	}
 
 	return result;

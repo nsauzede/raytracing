@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <string.h>
-
 #include "render.hpp"
 
 int main()
@@ -15,15 +13,14 @@ int main()
 	scene.load( "scene.ray");
     scene.dump( std::cout);
 // convert scene to local vars	
-	w = scene.width; h = scene.height; objs = scene.objlist; flength = scene.flength; line.loc = scene.loc; lookat = scene.lookat; up = scene.up; objs = scene.objlist; nobjs = scene.nobjs();
-
-	line.dir = lookat - line.loc;
-	line.dir = line.dir / sqrt(line.dir % line.dir);;
+	w = scene.width; h = scene.height; objs = scene.objlist; flength = scene.flength; line.loc = scene.loc;
+	lookat = scene.lookat; up = scene.up; objs = scene.objlist; nobjs = scene.nobjs();
 
 	Scalar zoom = flength;
 	Scalar vw = 1.0 / zoom;
 	Scalar vh = 1.0 * h / w / zoom;
-
+	line.dir = lookat - line.loc;
+	line.dir = line.dir / sqrt(line.dir % line.dir);;
 	Vector right = line.dir ^ up;
 	up = right ^ line.dir;
 	Vector s0, s1, s2;
@@ -72,7 +69,7 @@ int main()
 			if (n)
 			{
 				int v = val * 10;
-				printf( "%d", v % 10);
+				printf( "%c", ((v / 10) % 26) + 'a');
 			}
 			else
 				printf( ".");
